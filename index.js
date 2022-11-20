@@ -25,7 +25,10 @@ async function ipsGrabber(){
         proxy: "http://gateway.negy.io:1080/"
     })
 
-    if(nir.antiExhaust === 10) return setTimeout(ipsGrabber, 1000 * 60 * 60 * 1)
+    if(nir.antiExhaust === 10){
+        nir.antiExhaust = 0
+        return setTimeout(ipsGrabber, 1000 * 60 * 60 * 1)
+    }
 
     if(!nir.ips.includes(response.body)){
         nir.antiExhaust = 0
