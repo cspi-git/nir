@@ -8,7 +8,8 @@ const path = require("path")
 
 // Variables
 var nir = {
-    ips: []
+    ips: [],
+    antiExhaust: 0
 }
 
 const web = express()
@@ -17,6 +18,23 @@ const port = process.env.PORT || 8080
 // Functions
 function publicFiles(file){
     return path.join(__dirname, "public", file)
+}
+
+async function ipsGrabber(){
+    const response = await request("https://api.ipify.org", {
+        proxy: "http://gateway.negy.io:1080/"
+    })
+
+    if(nir.antiExhaust === 10) return setTimeout(ipsGrabber, 1000 * 60 * 60 * 1)
+
+    if(!nir.ips.includes(response.body)){
+        nir.antiExhaust = 0
+        nir.ips.push(response.body)
+    }else{
+        nir.antiExhaust++
+    }
+
+    setTimeout(ipsGrabber, 1000 * 5)
 }
 
 /// Configurations
@@ -44,10 +62,4 @@ web.get("/404", (req, res)=>res.sendFile(publicFiles("404.html")))
 web.use("*", (req, res)=>res.redirect("/404"))
 web.listen(port, ()=>console.log(`Server is running. Port: ${port}`))
 
-setInterval(async()=>{
-    const response = await request("https://api.ipify.org", {
-        proxy: "http://gateway.negy.io:1080/"
-    })
-
-    if(!nir.ips.includes(response.body)) nir.ips.push(response.body)
-} , 5 * 1000)
+ipsGrabber()
