@@ -1,4 +1,4 @@
-# NIR
+# NIR (Because the gateway is disabled this is ARCHIVED)
 Negy Internet Realm.
 
 ## Installation
